@@ -1,9 +1,7 @@
 #include "main.h"
-
 const char *ssid = "Locker 0943071";
 const char *password = "password";
-
-//Global variables
+//Global variables 
 Thread closeLockThread(closeLock);
 Thread soundThread(speakerDisable);
 
@@ -49,7 +47,7 @@ void setup(){
 	//setup serial
 	#ifdef DEBUG_MODE
 		delay(1000);
-		Serial.begin(9600);
+		Serial.begin(115200);
 		Serial.println("Serial enabled");
 	#endif
 
@@ -77,11 +75,11 @@ void setup(){
 }
 
 void loop(){
-	//Check the threads
-	soundThread.check();
-	closeLockThread.check();
-
 	//Handle other services
 	handleRFID();
 	handleWebserver();
+
+	//Check the threads
+	soundThread.check();
+	closeLockThread.check();
 }

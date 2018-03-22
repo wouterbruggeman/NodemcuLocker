@@ -70,7 +70,13 @@ void checkForAccess(){
 
 bool readerIsConnected(){
 	char v = reader.PCD_ReadRegister(reader.VersionReg);
+	Serial.print(v, DEC);
+	Serial.print(" ");
 	if((v == 0x00) || (v == 0xFF)){
+		#ifdef DEBUG_MODE
+			Serial.print("Reader version code: ");
+			Serial.println(v, DEC);
+		#endif
 		return false;
 	}
 	return true;
@@ -116,10 +122,10 @@ void setupRFID(){
 }
 
 void handleRFID(){
-	if(!readerIsConnected()){
+	/*if(!readerIsConnected()){
 		closeLock();
-	}else{
+	}else{*/
 		checkForAccess();
-	}
+	//}
 	rfidModeTimeout.check();
 }

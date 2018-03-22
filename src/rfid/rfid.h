@@ -8,13 +8,15 @@
 #include "../main.h"
 
 //PIN DEFINES
-#define MFRC522_SS_PIN 15
-#define MFRC522_RST_PIN 5
+#define MFRC522_SS_PIN D8
+#define MFRC522_RST_PIN D4
 
 #define RFID_MODE_NORMAL 0
 #define RFID_MODE_TAG_ADD 1
 #define RFID_MODE_TAG_REMOVE 2
 #define RFID_MODE_TIMEOUT 15000
+
+#define DEBUG_MODE
 
 void checkForAccess();
 bool readerIsConnected();

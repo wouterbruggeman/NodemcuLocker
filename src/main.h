@@ -25,7 +25,7 @@
 
 //OTHER DEFINES
 #define LOCK_CLOSE_DURATION 3000
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 void speakerDisable();
 void noAccessAlert();
