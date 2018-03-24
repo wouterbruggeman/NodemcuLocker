@@ -2,13 +2,6 @@
 #define MAIN_H
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-#include "webserver/webserver.h"
-#include "thread/thread.h"
-#include "memory/memory.h"
-#include "rfid/rfid.h"
 
 //PIN DEFINES
 #define SPEAKER_PIN D2
@@ -25,7 +18,7 @@
 
 //OTHER DEFINES
 #define LOCK_CLOSE_DURATION 3000
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 void speakerDisable();
 void noAccessAlert();

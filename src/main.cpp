@@ -1,6 +1,14 @@
 #include "main.h"
-const char *ssid = "Locker 0943071";
-const char *password = "password";
+
+#include <ESP8266WebServer.h>
+#include "webserver/webserver.h"
+#include "thread/thread.h"
+#include "memory/memory.h"
+#include "rfid/rfid.h"
+
+const char *AP_SSID = "Locker 0943071";
+const char *AP_PASSWORD = "password";
+
 //Global variables 
 Thread closeLockThread(closeLock);
 Thread soundThread(speakerDisable);
@@ -56,12 +64,15 @@ void setup(){
 	pinMode(SPEAKER_PIN, OUTPUT);
 	pinMode(LED_PIN, OUTPUT);
 
+	digitalWrite(LOCK_PIN, LOW);
+	digitalWrite(LED_PIN, HIGH);
+
 	#ifdef DEBUG_MODE
 		Serial.println("Digital pins enabled");
 	#endif
 	
 	//setup WIFI
-	WiFi.softAP(ssid, password);
+	WiFi.softAP(AP_SSID, AP_PASSWORD);
 	IPAddress defaultGateway = WiFi.softAPIP();
 	#ifdef DEBUG_MODE
 		Serial.print("AP IP address: ");

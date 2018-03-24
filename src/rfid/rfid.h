@@ -1,12 +1,6 @@
 #ifndef RFID_H
 #define RFID_H
 
-#include <Arduino.h>
-#include <MFRC522.h>
-#include "../memory/memory.h"
-#include "../thread/thread.h"
-#include "../main.h"
-
 //PIN DEFINES
 #define MFRC522_SS_PIN D8
 #define MFRC522_RST_PIN D4

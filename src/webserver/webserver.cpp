@@ -1,5 +1,17 @@
 #include "webserver.h"
 
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include "../rfid/rfid.h"
+#include "../memory/memory.h"
+#include "../main.h"
+
+#ifdef ESP8266
+	extern "C" {
+	#include "user_interface.h"
+}
+#endif
+
 const String header =
 "<html><head><title>Locker</title><style>body{margin:0;padding:0;}"
 "button{background-color:#4CAF50;width:50%;border:none;padding:16;text-align:center;"
@@ -58,6 +70,10 @@ void handleRootPage(){
 			
 	if((webserver.args() != 0) && (webserver.argName(0) == "action")){
 		int arg = webserver.arg(0).toInt();
+		#ifdef DEBUG_MODE
+			Serial.print("Action: ");
+			Serial.println(arg, DEC);
+		#endif
 		if(arg != 0){
 			switch(arg){
 				case 1:
@@ -119,18 +135,35 @@ void handleSystemInformationPage(){
 	String webpage = header;
 	webpage += "<div id='info'>";
 
-	webpage += "CPU frequency:<br>";
+	webpage += "<b>CPU frequency:</b><br>";
 	webpage += system_get_cpu_freq();
-	webpage += "MHz<hr>Free heap size:<br>";
+	webpage += "MHz<hr><b>Free heap size:</b><br>";
 	webpage += system_get_free_heap_size();
-	webpage += "<br><hr>Program size:<br>";
+	webpage += " bytes<br><hr><b>Program size:</b><br>";
 	webpage += ESP.getSketchSize();
-	webpage += "<br><hr>Free program size:<br>";
+	webpage += " bytes<br><hr><b>Free program size:</b><br>";
 	webpage += ESP.getFreeSketchSpace();
-	webpage += "<br><hr>Reset reason:<br>";
-	webpage += ESP.getResetReason();
-	webpage += "<br><hr>Milliseconds alive:<br>";
+	webpage += " bytes<br><hr><b>Milliseconds alive:</b><br>";
 	webpage += millis();
+	webpage += "<br><hr><b>Days alive:</b><br>";
+	webpage += millis() / 1000 / 60 / 60 / 24;
+	webpage += "<br><hr><b>RFID reader status:</b><br>";
+	if(readerIsConnected()){
+		webpage += "Connected.";
+	}else{
+		webpage += "Disconnected.";
+	}
+	webpage += "<br><hr><b>Compile time:</b><br>";
+	webpage += __TIME__;
+	webpage += "<br>";
+	webpage += __DATE__;
+	webpage += "<br><hr><b>Debug mode:</b><br>";
+	#ifdef DEBUG_MODE
+		webpage += "Enabled.";
+	#else
+		webpage += "Disabled.";
+	#endif
+
 
 	webpage += "</div>";
 	webpage += footer;
@@ -174,7 +207,6 @@ void setupWebserver(){
 
 	//start the webserver
 	webserver.begin();
-
 
 	#ifdef DEBUG_MODE
 		Serial.println("HTTP server started");

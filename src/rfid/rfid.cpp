@@ -1,5 +1,11 @@
 #include "rfid.h"
 
+#include <Arduino.h>
+#include <MFRC522.h>
+#include "../memory/memory.h"
+#include "../thread/thread.h"
+#include "../main.h"
+
 MFRC522 reader(MFRC522_SS_PIN, MFRC522_RST_PIN);
 Thread rfidModeTimeout(timeoutRFIDMode);
 
@@ -122,10 +128,6 @@ void setupRFID(){
 }
 
 void handleRFID(){
-	/*if(!readerIsConnected()){
-		closeLock();
-	}else{*/
-		checkForAccess();
-	//}
+	checkForAccess();
 	rfidModeTimeout.check();
 }
