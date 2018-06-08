@@ -35,12 +35,12 @@ String charToHex(char c){
 	for(int i = 1; i >= 0; i--){
 		char nibble = c >> (i<<2);
 		nibble = nibble & 0x0F;
-		
+
 		if(nibble > 9){
 			nibble += HEX_UPPERCASE - 10;
 			hex += nibble;
 		}else{
-			nibble += 48; 
+			nibble += 48;
 			hex += nibble;
 		}
 	}
@@ -67,7 +67,7 @@ String showMainMenu(){
 
 void handleRootPage(){
 	String webpage = header;
-			
+
 	if((webserver.args() != 0) && (webserver.argName(0) == "action")){
 		int arg = webserver.arg(0).toInt();
 		#ifdef DEBUG_MODE
@@ -100,6 +100,9 @@ void handleRootPage(){
 	webpage += showMainMenu();
 	webpage += footer;
 	webserver.send(200, DATA_TYPE, webpage);
+
+	//Enable the wifi for some time
+	enableWifi();
 }
 
 void handleEEPROMDumpPage(){

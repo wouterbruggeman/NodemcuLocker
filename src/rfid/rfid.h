@@ -10,8 +10,6 @@
 #define RFID_MODE_TAG_REMOVE 2
 #define RFID_MODE_TIMEOUT 15000
 
-#define DEBUG_MODE
-
 void checkForAccess();
 bool readerIsConnected();
 void addRFID();

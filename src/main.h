@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include <Arduino.h>
+//#define DEBUG_MODE
 
 //PIN DEFINES
 #define SPEAKER_PIN D2
@@ -18,13 +19,17 @@
 
 //OTHER DEFINES
 #define LOCK_CLOSE_DURATION 3000
-//#define DEBUG_MODE
+//#define WIFI_DISABLE_DURATION 300000 //5 minutes
+#define WIFI_DISABLE_DURATION 120000 //2 minutes
 
 void speakerDisable();
 void noAccessAlert();
 void closeLock();
 void openLock();
 void beepFeedback();
+
+void enableWifi();
+void disableWifi();
 
 void setup();
 void loop();

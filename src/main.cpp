@@ -6,12 +6,13 @@
 #include "memory/memory.h"
 #include "rfid/rfid.h"
 
-const char *AP_SSID = "Locker 0943071";
-const char *AP_PASSWORD = "password";
+const char *AP_SSID = "Locker_";
+const char *AP_PASSWORD = "pass";
 
-//Global variables 
+//Global variables
 Thread closeLockThread(closeLock);
 Thread soundThread(speakerDisable);
+Thread disableWifiThread(disableWifi);
 
 void speakerDisable(){
 	noTone(SPEAKER_PIN);
@@ -21,7 +22,7 @@ void speakerDisable(){
 void noAccessAlert(){
 	tone(SPEAKER_PIN, SOUND_NO_ACCESS_FREQUENCY);
 
-	//Disable the sound after some time 
+	//Disable the sound after some time
 	soundThread.setDelay(SOUND_NO_ACCESS_DURATION);
 }
 
@@ -40,7 +41,7 @@ void openLock(){
 	//Start a few threads.
 	soundThread.setDelay(SOUND_OPEN_DURATION);
 	closeLockThread.setDelay(LOCK_CLOSE_DURATION);
-	
+
 	#ifdef DEBUG_MODE
 		Serial.println("Lock open");
 	#endif
@@ -49,6 +50,24 @@ void openLock(){
 void beepFeedback(){
 	tone(SPEAKER_PIN, SOUND_BEEP_FREQUENCY);
 	soundThread.setDelay(SOUND_BEEP_DURATION);
+}
+
+void enableWifi(){
+	WiFi.enableAP(true);
+	disableWifiThread.setDelay(WIFI_DISABLE_DURATION);
+	digitalWrite(LED_PIN, HIGH);
+	#ifdef DEBUG_MODE
+		Serial.println("Wifi enabled");
+	#endif
+}
+
+void disableWifi(){
+	WiFi.enableAP(false);
+	disableWifiThread.disable();
+	digitalWrite(LED_PIN, LOW);
+	#ifdef DEBUG_MODE
+		Serial.println("Wifi disabled");
+	#endif
 }
 
 void setup(){
@@ -70,9 +89,10 @@ void setup(){
 	#ifdef DEBUG_MODE
 		Serial.println("Digital pins enabled");
 	#endif
-	
+
 	//setup WIFI
 	WiFi.softAP(AP_SSID, AP_PASSWORD);
+	enableWifi();
 	IPAddress defaultGateway = WiFi.softAPIP();
 	#ifdef DEBUG_MODE
 		Serial.print("AP IP address: ");
@@ -93,4 +113,5 @@ void loop(){
 	//Check the threads
 	soundThread.check();
 	closeLockThread.check();
+	disableWifiThread.check();
 }

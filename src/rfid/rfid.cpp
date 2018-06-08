@@ -22,7 +22,10 @@ void checkForAccess(){
 	}
 
 	lastTagIsKnown = false;
-	
+
+	//Enable wifi for some time
+	enableWifi();
+
 	#ifdef DEBUG_MODE
 		Serial.print("RFID tag found: ");
 	#endif
@@ -58,7 +61,7 @@ void checkForAccess(){
 	}else if(rfidMode == RFID_MODE_TAG_ADD){
 		//Insert into EEPROM
 		insertBlock(data);
-		
+
 		//make sound
 		beepFeedback();
 		rfidModeTimeout.disable();
