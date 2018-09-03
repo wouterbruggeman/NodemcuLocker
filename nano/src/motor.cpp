@@ -13,11 +13,22 @@ Motor::Motor(int pin_0, int pin_1, int pin_2, int pin_3){
 	pinMode(pin_1, OUTPUT);
 	pinMode(pin_2, OUTPUT);
 	pinMode(pin_3, OUTPUT);
+
+	_steps = 0;
+	_timer = 0;
 }
 
 void Motor::loop(){
-	//Return if the motor should not be running.
+
+	//If the motor has steps to do:
+	if(_steps > 0){
+		this->rotate();
+		_steps--;
+	}
+
+	//If the motor has some rotation time todo:
 	if(millis() >= _timer){
+		//Return if the motor shouldn't be running
 		return;
 	}
 
@@ -25,9 +36,20 @@ void Motor::loop(){
 	this->rotate();
 }
 
+
 void Motor::start(bool direction, unsigned long duration){
+	//Set the direction and the timer
 	_direction = direction;
 	_timer = millis() + duration;
+}
+
+void Motor::startStep(bool direction, unsigned int steps){
+	//Set the direction and the amount of steps
+	_direction = direction;
+	_steps = steps;
+
+	//Set the timer to 0, to avoid unnecessary rotations
+	_timer = 0;
 }
 
 void Motor::rotate(){
