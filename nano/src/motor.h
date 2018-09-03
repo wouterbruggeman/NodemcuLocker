@@ -1,7 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#include "shiftregister.h"
+#define MICROSECOND_DELAY 500
 
 const unsigned char MOTOR_PHRASES[4] = {
 	193,
@@ -12,7 +12,7 @@ const unsigned char MOTOR_PHRASES[4] = {
 
 class Motor{
 	public:
-		Motor(ShiftRegister *shiftRegister, int byte, bool nibble);
+		Motor(int pin_0, int pin_1, int pin_2, int pin_3);
 		void loop();
 		void start(bool direction, unsigned long duration);
 	private:
@@ -20,13 +20,11 @@ class Motor{
 		void rotate();
 
 		//Variables:
-		ShiftRegister *_shiftRegister;
 		bool _direction;
-		int _byte;
-		bool _nibble;
-
 		unsigned long _timer;
-		unsigned char phrase = 0;
+		unsigned char _phrase = 0;
+
+		int _pins[0];
 
 };
 

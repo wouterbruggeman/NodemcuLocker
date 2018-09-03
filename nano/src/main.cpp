@@ -1,42 +1,33 @@
 #include <Arduino.h>
 #include "pins.h"
 #include "esp.h"
-#include "speaker.h"
-#include "motor.h"
 #include "rfidhandler.h"
 #include "keypadhandler.h"
-#include "shiftregister.h"
+#include "motor.h"
 
-/*ESP *esp;
+ESP *esp;
 Speaker *speaker;
 RFIDHandler *rfidHandler;
-KeypadHandler *keypadHandler;*/
-Motor *motors[2];
-ShiftRegister *shiftRegister;
+KeypadHandler *keypadHandler;
+Motor *motors;
 
 void setup(){
-	/*esp = new ESP(speaker);
+	esp = new ESP(speaker);
 	speaker = new Speaker(SPEAKER_PIN);
-	rfidHandler = new RFIDHandler(MFRC522_SS_PIN, MFRC522_RST_PIN, esp);
-	keypadHandler = new KeypadHandler(KEYPAD_ROW_PINS, KEYPAD_COL_PINS, esp, speaker);*/
- 	shiftRegister = new ShiftRegister(SHIFTREG_DATA_DIRECTION_REGISTER,
-			SHIFTREG_DATA_REGISTER, SHIFTREG_DS_OFFSET, SHIFTREG_SHCP_OFFSET, SHIFTREG_STCP_OFFSET, 1);
+	rfidHandler = new RFIDHandler(MFRC522_SS_PIN, MFRC522_RST_PIN, esp, speaker);
+	keypadHandler = new KeypadHandler(KEYPAD_ROW_PINS, KEYPAD_COL_PINS, esp, speaker);
 
-	motors[0] = new Motor(shiftRegister, 0, 1);
-	//motors[1] = new Motor(shiftRegister, 0, 1);
+	motors = new Motor(MOTOR_PIN_0, MOTOR_PIN_1, MOTOR_PIN_2, MOTOR_PIN_3);
 
-	//Play a boot tone
-	//speaker->enable(BOOT_SOUND_FREQUENCY, BOOT_SOUND_DURATION);
+	//Boot sound.
+	speaker->playBootSound();
+	speaker->disable();
 
-	motors[0]->start(true, 5000);
+	motors->start(true, 2000);
 }
 
 void loop(){
-	//Check for updates within these objects.
-	/*rfidHandler->loop();
-	keypadHandler->loop();*/
-
-	motors[0]->loop();
-
-	//esp->loop();
+	rfidHandler->loop();
+	keypadHandler->loop();
+	motors->loop();
 }

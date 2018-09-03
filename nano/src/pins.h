@@ -11,12 +11,19 @@
 const char KEYPAD_COL_PINS[KEYPAD_COLS] = {5,4,3,2};
 const char KEYPAD_ROW_PINS[KEYPAD_ROWS] = {9,8,7,6};
 
+/* Motor pins */
+#define MOTOR_PIN_0 A1
+#define MOTOR_PIN_1 A2
+#define MOTOR_PIN_2 A3
+#define MOTOR_PIN_3 A4
+
 /* Shift register(s) */
 #define SHIFTREG_DATA_DIRECTION_REGISTER DDRC
 #define SHIFTREG_DATA_REGISTER PORTC
 #define SHIFTREG_DS_OFFSET 1
 #define SHIFTREG_SHCP_OFFSET 2
 #define SHIFTREG_STCP_OFFSET 3
+
 
 /* Other hardware */
 #define SPEAKER_PIN A5

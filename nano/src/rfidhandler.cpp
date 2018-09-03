@@ -1,11 +1,12 @@
 #include "rfidhandler.h"
 #include <Arduino.h>
 
-RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, ESP *esp){
+RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, ESP *esp, Speaker *speaker){
 	SPI.begin();
 	_reader = new MFRC522(ss_pin, rst_pin);
 	_reader->PCD_Init();
 	_esp = esp;
+	_speaker = speaker;
 }
 
 void RFIDHandler::loop(){

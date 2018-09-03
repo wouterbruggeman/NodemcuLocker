@@ -3,12 +3,13 @@
 
 #include <MFRC522.h>
 #include "esp.h"
+#include "speaker.h"
 
 #define UID_SIZE 4
 
 class RFIDHandler{
 	public:
-		RFIDHandler(int ss_pin, int rst_pin, ESP *esp);
+		RFIDHandler(int ss_pin, int rst_pin, ESP *esp, Speaker *speaker);
 		void loop();
 		void readUid();
 		bool cardIsShown();
@@ -17,6 +18,7 @@ class RFIDHandler{
 	private:
 		MFRC522 *_reader;
 		ESP *_esp;
+		Speaker *_speaker;
 		uint8_t _currentUid[UID_SIZE];
 
 };

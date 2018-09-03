@@ -6,10 +6,14 @@
 
 class Speaker{
 	public:
-		Speaker(int pin);
-		void enable(unsigned long frequency, unsigned long duration);
+		Speaker(unsigned char pin);
+		void enable(unsigned int frequency, unsigned long duration);
+		void disable();
+
+		//Warning: blocking function!!
+		void playBootSound();
 	private:
-		int _pin;
+		unsigned char _pin;
 };
 
 #endif
