@@ -7,7 +7,7 @@
 #include "rfid/rfid.h"
 
 const char *AP_SSID = "Locker_";
-const char *AP_PASSWORD = "pass";
+const char *AP_PASSWORD = "3rbi7s*b3iH@w92!";
 
 //Global variables
 Thread closeLockThread(closeLock);

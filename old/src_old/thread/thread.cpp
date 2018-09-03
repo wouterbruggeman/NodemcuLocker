@@ -16,9 +16,6 @@ void Thread::check()
 		//Execute given function:
 		fcnPtr();
 
-		//Update the counter
-		_counter++;
-
 		//Update the timer
 		_triggerOnMillis = _delay + millis();
 	}

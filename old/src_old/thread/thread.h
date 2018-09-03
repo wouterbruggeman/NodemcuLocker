@@ -7,7 +7,6 @@ class Thread
 {
 	unsigned long _triggerOnMillis;
 	unsigned long _delay;
-	int _counter;
 	bool _enabled;
 	void (*fcnPtr)();
 	public:

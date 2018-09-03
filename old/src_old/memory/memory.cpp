@@ -51,7 +51,7 @@ int searchForBlock(char data[5]){
 			return i;
 		}
 	}
-	
+
 	//Nothing found. Return -1
 	return -1;
 }
@@ -101,13 +101,13 @@ void insertBlock(char data[5]){
 	if(block != -1){
 		return;
 	}
-	
+
 	//Get the next block to write to.
 	block = getNextEmptyMemBlock();
 	if(block == -1){
 		return;
 	}
-	memWrite(block, data); 
+	memWrite(block, data);
 	#ifdef DEBUG_MODE
 		Serial.print("Block inserted on: ");
 		Serial.println(block);
