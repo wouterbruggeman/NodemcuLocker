@@ -11,9 +11,8 @@ Nano::Nano(CardDatabase *acceptedCards){
 	//Init variables
 	_acceptedCards = acceptedCards;
 
-
 	//DEBUG STUFF
-	delay(1000);
+	delay(2500);
 	Serial.println("Hello world!");
 	this->receiveUid();
 }
@@ -22,6 +21,7 @@ void Nano::loop(){
 	//Check if the Keep Alive packet has to be send.
 	if(millis() >= _KAPacketTimer){
 		this->sendKAPacket();
+		_KAPacketTimer = millis() + NANO_KEEP_ALIVE_INTERVAL;
 	}
 
 	//Check serial
@@ -41,8 +41,6 @@ void Nano::checkSerial(){
 	if(!Serial.available()){
 		return;
 	}
-	//TODO: remove the line below to stop debugging.
-	return;
 	//First byte in packet contains type
 	switch(Serial.read()){
 		case 0:
@@ -63,19 +61,16 @@ void Nano::receiveKeystroke(){
 void Nano::receiveUid(){
 	uint8_t uid[UID_SIZE];
 	uint8_t code[PASSCODE_SIZE];
+
 	for(int i = 0; i < UID_SIZE; i++){
 		uid[i] = 1 + i;
+	}
+	for(int i = 0; i < PASSCODE_SIZE; i++){
 		code[i] = 5 + i;
 	}
 
-	Serial.println("Checking DB");
-	if(_acceptedCards->contains(uid, code)){
-		Serial.println("DB contains UID");
-	}else{
-		Serial.println("DB doesn't contain UID");
-		_acceptedCards->add(uid, code);
-		Serial.println("Added uid.");
-	}
+	_acceptedCards->add(uid, code);
+
 }
 
 void Nano::sendKAPacket(){

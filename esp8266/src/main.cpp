@@ -2,7 +2,7 @@
 #include "settings.h"
 #include "filenames.h"
 #include "nano.h"
-//#include "webserver.h"
+//#include "httpserver.h"
 #include "carddatabase.h"
 
 CardDatabase *acceptedCards;

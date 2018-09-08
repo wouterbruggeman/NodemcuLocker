@@ -5,6 +5,7 @@
 
 #define UID_SIZE 4
 #define PASSCODE_SIZE 4
+#define BLOCK_SIZE (UID_SIZE + PASSCODE_SIZE)
 
 class CardDatabase{
 	public:
@@ -18,6 +19,7 @@ class CardDatabase{
 	private:
 		void remove(int index);
 		void clear();
+		void debugPrintFile();
 
 		//Variables
 		char *_filename;
