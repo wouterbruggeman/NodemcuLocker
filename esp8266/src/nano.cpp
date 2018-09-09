@@ -68,13 +68,14 @@ void Nano::receiveUid(){
 	for(int i = 0; i < PASSCODE_SIZE; i++){
 		code[i] = 5 + i;
 	}
-
+	_acceptedCards->mountFs(true);
 	_acceptedCards->add(uid, code);
+	_acceptedCards->mountFs(false);
 
 }
 
 void Nano::sendKAPacket(){
 	//Send only the packet type (in this case just '0')
 	//Serial.write(0);
-	Serial.println("KA PACKET!");
+	//Serial.println("KA PACKET!");
 }

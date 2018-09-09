@@ -6,43 +6,28 @@ CardDatabase::CardDatabase(char *filename){
 
 }
 
-void CardDatabase::add(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]){
-	if(!SPIFFS.begin()){
-		return;
-	}
-
-	if(SPIFFS.exists(_filename)){
-		Serial.println("File exists");
+bool CardDatabase::mountFs(bool state){
+	if(state){
+		return SPIFFS.begin();
 	}else{
-		Serial.println("File doesn't exists");
-		File f = SPIFFS.open(_filename, "a+");
-		f.write(1);
-		f.close();
-
-		f = SPIFFS.open(_filename, "r");
-		bool test = SPIFFS.exists(_filename);
-		Serial.println(test, DEC);
-
+		SPIFFS.end();
+		return true;
 	}
+}
 
-	/*if(this->contains(card, code)){
+void CardDatabase::add(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]){
+	if(this->contains(card, code)){
 		return;
 	}
 
-	File f = SPIFFS.open(_filename, "a");
-	if(!f){
-		//Create the file if it does not exist.
-		f = SPIFFS.open(_filename, "w+");
-		Serial.println("Created new file");
-	}
-
+	File f = SPIFFS.open(_filename, "a+");
 	f.write(card, UID_SIZE);
 	f.write(code, PASSCODE_SIZE);
 	Serial.println("Card added.");
 
 	f.close();
 
-	this->debugPrintFile();*/
+	this->debugPrintFile();
 }
 
 void CardDatabase::remove(uint8_t card[UID_SIZE]){
@@ -56,16 +41,17 @@ void CardDatabase::remove(uint8_t card[UID_SIZE]){
 void CardDatabase::remove(int index){
 	//Read the file
 	File f = SPIFFS.open(_filename, "r+");
-
-	//Create new buffer
 	char buffer[f.size()];
 	f.readBytes(buffer, f.size());
 
-	//Loop through the content of the file
-	for(int i = 0; i < f.size(); i++){
-		//Put bytes into new buffer if index does not equal 'index'
-		if((i - (i % BLOCK_SIZE)) != index){
-			f.write(buffer[i]);
+	//Loop through all blocks in the file
+	for(int i = 0; i < (f.size() / BLOCK_SIZE); i++){
+		//Check for the index
+		if(i != index){
+			//Place item back in file.
+			for(int j = 0; j < BLOCK_SIZE; j++){
+				f.write(buffer[j + (i * BLOCK_SIZE)]);
+			}
 		}
 	}
 
@@ -82,24 +68,26 @@ int CardDatabase::find(uint8_t card[UID_SIZE]){
 	for(int i = 0; i < (f.size() / BLOCK_SIZE); i++){
 		int matchCounter = 0;
 		for(int j = 0; j < UID_SIZE; j++){
-			if(card[j] == buffer[i]){
+			if(card[j] == buffer[i + j]){
 				matchCounter++;
 			}
 		}
 		if(matchCounter == UID_SIZE){
 			f.close();
 			SPIFFS.end();
-			return i / UID_SIZE;
+			return i;
 		}
 	}
 	f.close();
-	SPIFFS.end();
 	return -1;
 }
 
 bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]){
 	//Read the file
 	File f = SPIFFS.open(_filename, "r");
+	if(!f){
+		Serial.println("File not open..");
+	}
 	char buffer[f.size()];
 	f.readBytes(buffer, f.size());
 
@@ -108,9 +96,15 @@ bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE])
 	for(int i = 0; i < UID_SIZE; i++){
 		block[i] = card[i];
 	}
-	for(int i = UID_SIZE; i < PASSCODE_SIZE; i++){
-		block[i] = code[i];
+	for(int i = UID_SIZE; i < BLOCK_SIZE; i++){
+		block[i] = code[i - UID_SIZE];
 	}
+	Serial.println("Block created");
+	for(int i = 0; i < BLOCK_SIZE; i++){
+		Serial.print(block[i]);
+	}
+	Serial.println("");
+	Serial.println("");
 
 	//Walk through all blocks
 	for(int i = 0; i < (f.size() / BLOCK_SIZE); i++){
@@ -122,51 +116,44 @@ bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE])
 		}
 		if(matchCounter == BLOCK_SIZE){
 			f.close();
-			SPIFFS.end();
 			return true;
 		}
 	}
 
 	f.close();
-	SPIFFS.end();
 	return false;
 }
 
 void CardDatabase::clear(){
-	if(!SPIFFS.begin()){
-		return;
-	}
-
 	//Read the file
 	File f = SPIFFS.open(_filename, "w");
 	f.flush();
 	f.close();
-	SPIFFS.end();
 }
 
 void CardDatabase::debugPrintFile(){
+	if(!SPIFFS.begin()){
+		return;
+	}
 	//Read the file
 	File f = SPIFFS.open(_filename, "r");
 	char buffer[f.size()];
 	f.readBytes(buffer, f.size());
 
 	Serial.println("FILE:");
-	for(int i = 0; i < (f.size() / (UID_SIZE + PASSCODE_SIZE)); i++){
-		for(int j = 0; j < UID_SIZE + PASSCODE_SIZE; j++){
-			Serial.print(buffer[j + (i * (UID_SIZE + PASSCODE_SIZE))], DEC);
+	for(int i = 0; i < (f.size() / BLOCK_SIZE); i++){
+		for(int j = 0; j < BLOCK_SIZE; j++){
+			Serial.print(buffer[j + (i * BLOCK_SIZE)], DEC);
 		}
 		Serial.println("");
 	}
-
 	Serial.println("==============");
-
 	FSInfo fs_info;
 	SPIFFS.info(fs_info);
 	Serial.print("totalBytes: ");
 	Serial.println(fs_info.totalBytes);
 	Serial.print("usedBytes: ");
 	Serial.println(fs_info.usedBytes);
-
 	Serial.println("==============");
 
 	f.close();
