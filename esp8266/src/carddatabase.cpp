@@ -7,6 +7,7 @@ CardDatabase::CardDatabase(char *filename){
 }
 
 bool CardDatabase::mountFs(bool state){
+	//Mount or unmount the filesystem depending on the state bool
 	if(state){
 		return SPIFFS.begin();
 	}else{
@@ -16,25 +17,28 @@ bool CardDatabase::mountFs(bool state){
 }
 
 void CardDatabase::add(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]){
+	//Don't add the card if it is already registered.
 	if(this->contains(card, code)){
 		return;
 	}
 
+
+	//Open and write to the file
 	File f = SPIFFS.open(_filename, "a+");
 	f.write(card, UID_SIZE);
 	f.write(code, PASSCODE_SIZE);
-	Serial.println("Card added.");
-
 	f.close();
 
 	this->debugPrintFile();
 }
 
 void CardDatabase::remove(uint8_t card[UID_SIZE]){
+	//Find the card position
 	int index = find(card);
 	if(index == -1){
 		return;
 	}
+	//Remove the card from the database
 	remove(index);
 }
 
@@ -86,7 +90,7 @@ bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE])
 	//Read the file
 	File f = SPIFFS.open(_filename, "r");
 	if(!f){
-		Serial.println("File not open..");
+		return false;
 	}
 	char buffer[f.size()];
 	f.readBytes(buffer, f.size());
@@ -99,12 +103,6 @@ bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE])
 	for(int i = UID_SIZE; i < BLOCK_SIZE; i++){
 		block[i] = code[i - UID_SIZE];
 	}
-	Serial.println("Block created");
-	for(int i = 0; i < BLOCK_SIZE; i++){
-		Serial.print(block[i]);
-	}
-	Serial.println("");
-	Serial.println("");
 
 	//Walk through all blocks
 	for(int i = 0; i < (f.size() / BLOCK_SIZE); i++){
@@ -115,6 +113,7 @@ bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE])
 			}
 		}
 		if(matchCounter == BLOCK_SIZE){
+			//Database contains the combination.
 			f.close();
 			return true;
 		}
@@ -127,6 +126,7 @@ bool CardDatabase::contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE])
 void CardDatabase::clear(){
 	//Read the file
 	File f = SPIFFS.open(_filename, "w");
+	//Empty the file
 	f.flush();
 	f.close();
 }
