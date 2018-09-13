@@ -22,7 +22,6 @@ void CardDatabase::add(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]){
 		return;
 	}
 
-
 	//Open and write to the file
 	File f = SPIFFS.open(_filename, "a+");
 	f.write(card, UID_SIZE);

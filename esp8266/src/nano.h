@@ -12,11 +12,10 @@
 class Nano{
 	public:
 		Nano(CardDatabase *cardDatabase);
-
-		void loop();
+		void init();
 		void sendMotorPacket(bool direction, int steps);
 		void sendSpeakerPacket(int frequency, int duration);
-
+		void loop();
 	private:
 		void checkSerial();
 		void receiveKeystroke();

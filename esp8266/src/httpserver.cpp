@@ -1,13 +1,17 @@
 #include "httpserver.h"
 
-HTTPServer::HTTPServer(){
+HTTPServer::HTTPServer(const char *ssid, const char *password,
+		CardDatabase *acceptedCards, Nano *nano){
+	_ssid = ssid;
+	_password = password;
+	_acceptedCards = acceptedCards;
+	_nano = nano;
 	_webserver = new ESP8266WebServer();
-	this->initPages();
-	_webserver->begin();
 }
 
-void HTTPServer::wifiInit(char *ssid, char *password){
-	WiFi.softAP(ssid, password);
+void HTTPServer::init(){
+	WiFi.softAP(_ssid, _password);
+	this->initPages();
 	enableWifi();
 }
 
@@ -24,12 +28,14 @@ void HTTPServer::loop(){
 }
 
 void HTTPServer::initPages(){
-	/*_webserver->on("/", handlePageRequest);
-	_webserver->onNotFound(handlePageNotFound);*/
+	_webserver->on("/", HTTP_GET, std::bind(&HTTPServer::pageRequest, this));
+	//TODO: https://stackoverflow.com/questions/39803135/c-unresolved-overloaded-function-type
+	_webserver->begin();
 }
 
-void HTTPServer::showWebpage(int page){
-
+void HTTPServer::pageRequest(HTTPServer *server){
+	//Redirect the request to a member function
+	server->handlePageRequest();
 }
 
 void HTTPServer::handlePageRequest(){
@@ -40,11 +46,6 @@ void HTTPServer::handlePageRequest(){
 
 	//Load the page with pageID
 	//Look up filename in enum
+
+	_webserver->send(200, "text/html", "Hello world!");
 }
-
-void HTTPServer::handlePageNotFound(){
-	String webpage = "<h1>404</h1>";
-	_webserver->send(404, "text/html", webpage);
-}
-
-

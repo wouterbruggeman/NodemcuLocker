@@ -1,20 +1,30 @@
 #include "nano.h"
 
 Nano::Nano(CardDatabase *acceptedCards){
+	//Init variables
+	_acceptedCards = acceptedCards;
+}
 
+void Nano::init(){
 	//Start on the given baudrate
 	Serial.begin(NANO_BAUDRATE);
 
 	//Start the timer
 	_KAPacketTimer = millis() + NANO_KEEP_ALIVE_INTERVAL;
 
-	//Init variables
-	_acceptedCards = acceptedCards;
 
 	//DEBUG STUFF
 	delay(2500);
 	Serial.println("Hello world!");
 	this->receiveUid();
+}
+
+void Nano::sendMotorPacket(bool direction, int steps){
+	Serial.println("Motor test");
+}
+
+void Nano::sendSpeakerPacket(int frequency, int duration){
+	Serial.println("Speaker test");
 }
 
 void Nano::loop(){
@@ -26,14 +36,6 @@ void Nano::loop(){
 
 	//Check serial
 	this->checkSerial();
-}
-
-void Nano::sendMotorPacket(bool direction, int steps){
-	Serial.println("Motor test");
-}
-
-void Nano::sendSpeakerPacket(int frequency, int duration){
-	Serial.println("Speaker test");
 }
 
 void Nano::checkSerial(){
@@ -79,3 +81,4 @@ void Nano::sendKAPacket(){
 	//Serial.write(0);
 	//Serial.println("KA PACKET!");
 }
+
