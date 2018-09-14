@@ -9,8 +9,7 @@
 
 class CardDatabase{
 	public:
-		CardDatabase(char *filename);
-		bool mountFs(bool state);
+		CardDatabase(const char *filename);
 		void add(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]);
 		void remove(uint8_t card[UID_SIZE]);
 		bool contains(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]);
@@ -23,7 +22,7 @@ class CardDatabase{
 		void clear();
 
 		//Variables
-		char *_filename;
+		const char *_filename;
 };
 
 #endif

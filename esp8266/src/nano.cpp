@@ -11,12 +11,6 @@ void Nano::init(){
 
 	//Start the timer
 	_KAPacketTimer = millis() + NANO_KEEP_ALIVE_INTERVAL;
-
-
-	//DEBUG STUFF
-	delay(2500);
-	Serial.println("Hello world!");
-	this->receiveUid();
 }
 
 void Nano::sendMotorPacket(bool direction, int steps){
@@ -70,10 +64,6 @@ void Nano::receiveUid(){
 	for(int i = 0; i < PASSCODE_SIZE; i++){
 		code[i] = 5 + i;
 	}
-	_acceptedCards->mountFs(true);
-	_acceptedCards->add(uid, code);
-	_acceptedCards->mountFs(false);
-
 }
 
 void Nano::sendKAPacket(){

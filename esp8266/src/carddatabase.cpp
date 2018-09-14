@@ -1,19 +1,9 @@
 #include "carddatabase.h"
 #include "FS.h"
 
-CardDatabase::CardDatabase(char *filename){
+CardDatabase::CardDatabase(const char *filename){
 	_filename = filename;
 
-}
-
-bool CardDatabase::mountFs(bool state){
-	//Mount or unmount the filesystem depending on the state bool
-	if(state){
-		return SPIFFS.begin();
-	}else{
-		SPIFFS.end();
-		return true;
-	}
 }
 
 void CardDatabase::add(uint8_t card[UID_SIZE], uint8_t code[PASSCODE_SIZE]){

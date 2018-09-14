@@ -7,11 +7,16 @@
 #include "carddatabase.h"
 #include "nano.h"
 
+#define FILENAME_MAX_LENGTH 32
+const String HTML_DATA_TYPE  = "text/html";
+const String RESTRICTED_FILES[1] = {"/rfid_accepted"};
+
 #ifdef ESP8266
 	extern "C"{
 		#include "user_interface.h"
 	}
 #endif
+
 
 class HTTPServer{
 	public:
@@ -24,8 +29,10 @@ class HTTPServer{
 
 		//Page handling functions
 		void handlePageRequest();
+		void handlePageNotFound();
 	private:
 		void initPages();
+	 	void showPage(String pagename, int statusCode);
 
 		//Variables
 		ESP8266WebServer *_webserver;
@@ -37,6 +44,7 @@ class HTTPServer{
 
 	protected:
 		static void pageRequest(HTTPServer *server);
+		static void notFoundRequest(HTTPServer *server);
 
 };
 

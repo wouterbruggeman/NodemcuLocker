@@ -1,8 +1,43 @@
+<!DOCTYPE html>
 <html>
 	<head>
-		<title>Home</title>
+		<title>Locker | Home</title>
+		<meta charset="UTF-8"> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			body{
+				padding-top:70px
+			}
+			.bg-blue{
+				background-color:#213263
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Hello World</h1>
+		<nav class="navbar navbar-expand-md navbar-dark bg-blue fixed-top">
+			<a class="navbar-brand" href="//192.168.4.1">Locker</a>
+		    	<button class="navbar-toggler" type="button" data-toggle="collapse"
+				data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+		    		aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+		    	</button>
+			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				<ul class="navbar-nav mr-auto">
+			    		<li class="nav-item"><a class="nav-link" href="//192.168.4.1">Home</a></li>
+				</ul>
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="//192.168.4.1"><i class="fa fa-lock-open"></i> Open Lock</a>
+			    		</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container">
+			<h1>Hello index world!</h1>
+		</div>
 	</body>
 </html>

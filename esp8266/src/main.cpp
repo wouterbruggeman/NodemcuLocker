@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "FS.h"
 #include "settings.h"
 #include "filenames.h"
 #include "nano.h"
@@ -10,10 +11,13 @@ CardDatabase *acceptedCards;
 Nano *nano;
 
 void setup(){
+	//Mount the filesystem
+	SPIFFS.begin();
+
+	//Create the objects
 	server = new HTTPServer(AP_SSID, AP_PASSWORD, acceptedCards, nano);
 	acceptedCards = new CardDatabase(FILE_ACCEPTED_CARDS);
 	nano = new Nano(acceptedCards);
-
 
 	//Initialize the objects
 	nano->init();
@@ -26,3 +30,4 @@ void loop(){
 	nano->loop();
 	server->loop();
 }
+
