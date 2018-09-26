@@ -33,6 +33,7 @@ class HTTPServer{
 	private:
 		void initPages();
 	 	void showPage(String pagename, int statusCode);
+		void handleActionRequest(int request);
 
 		//Variables
 		ESP8266WebServer *_webserver;

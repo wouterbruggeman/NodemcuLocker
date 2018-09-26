@@ -13,6 +13,14 @@ void Nano::init(){
 	_KAPacketTimer = millis() + NANO_KEEP_ALIVE_INTERVAL;
 }
 
+void Nano::openLock(){
+
+}
+
+void Nano::closeLock(){
+
+}
+
 void Nano::sendMotorPacket(bool direction, int steps){
 	Serial.println("Motor test");
 }
@@ -51,24 +59,49 @@ void Nano::checkSerial(){
 }
 
 void Nano::receiveKeystroke(){
+	uint8_t keyStroke = (uint8_t)Serial.read();
 
+	switch(keyStroke){
+		case 'A':
+			break;
+		case 'B':
+			break;
+		case 'C':
+			break;
+		case 'D':
+			break;
+		case '#':
+			if(_acceptedCards->contains(_receivedUid, _receivedPasscode)){
+				//Open the lock
+				this->openLock();
+			}
+			break;
+		case '*':
+			//Clear the buffer
+			for(int i = 0; i < PASSCODE_SIZE; i++){
+				_receivedPasscode[i] = 0;
+			}
+			_passcodeIteration = 0;
+			break;
+		default:
+			//Add to buffer
+			_receivedPasscode[_passcodeIteration] = keyStroke;
+			if(_passcodeIteration < PASSCODE_SIZE){
+				_passcodeIteration++;
+			}else{
+				_passcodeIteration = 0;
+			}
+			break;
+	}
 }
 
 void Nano::receiveUid(){
-	uint8_t uid[UID_SIZE];
-	uint8_t code[PASSCODE_SIZE];
-
 	for(int i = 0; i < UID_SIZE; i++){
-		uid[i] = 1 + i;
-	}
-	for(int i = 0; i < PASSCODE_SIZE; i++){
-		code[i] = 5 + i;
+		_receivedUid[i] = Serial.read();
 	}
 }
 
 void Nano::sendKAPacket(){
 	//Send only the packet type (in this case just '0')
-	//Serial.write(0);
-	//Serial.println("KA PACKET!");
+	Serial.write(0);
 }
-
