@@ -1,11 +1,12 @@
 #include "rfidhandler.h"
 #include <Arduino.h>
+#include "settings.h"
 
-RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, ESP *esp, Speaker *speaker){
+RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator, Speaker *speaker){
 	SPI.begin();
 	_reader = new MFRC522(ss_pin, rst_pin);
 	_reader->PCD_Init();
-	_esp = esp;
+	_authenticator = authenticator;
 	_speaker = speaker;
 }
 
@@ -19,14 +20,29 @@ void RFIDHandler::loop(){
 	}
 
 	//Card is found
-	this->readUid();
-	_esp->sendUid(_currentUid);
+	this->saveUid();
 }
 
-void RFIDHandler::readUid(){
+void RFIDHandler::saveUid(){
+#ifdef ENABLE_SERIAL
+	Serial.print("UID: ");
+#endif
+
+	uint8_t currentUid[UID_SIZE];
 	for(int i = 0; i < UID_SIZE; i++){
-		_currentUid[i] = _reader->uid.uidByte[i];
+		currentUid[i] = _reader->uid.uidByte[i];
+#ifdef ENABLE_SERIAL
+		Serial.print(currentUid[i], DEC);
+		Serial.print(" ");
+#endif
 	}
+#ifdef ENABLE_SERIAL
+	Serial.println("");
+#endif
+
+	//Send the uid
+	_authenticator->addUid(currentUid);
+
 	_reader->PICC_HaltA();
 }
 

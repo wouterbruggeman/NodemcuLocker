@@ -14,8 +14,7 @@ class Motor{
 	public:
 		Motor(int pin_0, int pin_1, int pin_2, int pin_3);
 		void loop();
-		void start(bool direction, unsigned long duration);
-		void startStep(bool direction, unsigned int steps);
+		void step(bool direction, unsigned int steps);
 	private:
 		//Functions
 		void rotate();
@@ -23,7 +22,6 @@ class Motor{
 		//Variables:
 		bool _direction;
 		unsigned int _steps;
-		unsigned long _timer;
 		unsigned char _phrase = 0;
 
 		int _pins[0];

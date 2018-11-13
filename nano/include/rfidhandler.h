@@ -2,24 +2,21 @@
 #define RFIDHANDLER_H
 
 #include <MFRC522.h>
-#include "esp.h"
+#include "authenticator.h"
 #include "speaker.h"
-
-#define UID_SIZE 4
 
 class RFIDHandler{
 	public:
-		RFIDHandler(int ss_pin, int rst_pin, ESP *esp, Speaker *speaker);
+		RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator, Speaker *speaker);
 		void loop();
-		void readUid();
+		void saveUid();
 		bool cardIsShown();
 		bool readerIsConnected();
 		char getReaderVersion();
 	private:
 		MFRC522 *_reader;
-		ESP *_esp;
 		Speaker *_speaker;
-		uint8_t _currentUid[UID_SIZE];
+		Authenticator *_authenticator;
 
 };
 

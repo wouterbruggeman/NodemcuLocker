@@ -7,12 +7,19 @@
 class Speaker{
 	public:
 		Speaker(unsigned char pin);
-		void enable(unsigned int frequency, unsigned long duration);
-		void disable();
 
 		//Warning: blocking function!!
 		void playBootSound();
+
+		//Some sounds
+		void beepPositive();
+		void beepNegative();
+		void shortBeep();
+		void longBeep();
+		void buttonBeep();
 	private:
+		void enable(unsigned int frequency, unsigned long duration);
+		void disable();
 		unsigned char _pin;
 };
 

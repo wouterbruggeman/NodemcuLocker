@@ -2,13 +2,11 @@
 #define KEYPADHANDLER_H
 
 #include <Keypad.h>
-#include "esp.h"
+#include "authenticator.h"
+#include "settings.h"
 
 #define KEYPAD_ROWS 4
 #define KEYPAD_COLS 4
-
-#define KEYPAD_SOUND_DURATION 250
-#define KEYPAD_SOUND_FREQUENCY 1000
 
 const char KEYS[KEYPAD_ROWS][KEYPAD_COLS] = {
 	{'1', '2', '3', 'A'},
@@ -17,21 +15,26 @@ const char KEYS[KEYPAD_ROWS][KEYPAD_COLS] = {
 	{'*', '0', '#', 'D'}
 };
 
-//static const char *MASTER_CODE = "612381";
+#define INPUT_NORMAL 0
+#define INPUT_MASTER 1
 
 class KeypadHandler{
 	public:
 		KeypadHandler(
 				const char row_pins[KEYPAD_ROWS],
 				const char col_pins[KEYPAD_COLS],
-				ESP *esp,
+				Authenticator *authenticator,
 				Speaker *speaker
 			     );
 		void loop();
 	private:
+		void submit();
+
+		//Variables:
 		Keypad *_keypad;
-		ESP *_esp;
 		Speaker *_speaker;
+		Authenticator *_authenticator;
+		char _mode = INPUT_NORMAL;
 
 };
 
