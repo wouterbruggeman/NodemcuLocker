@@ -29,7 +29,7 @@ void Authenticator::authenticate(){
 void Authenticator::authenticateMaster(){
 	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
 		if(_pressedKeys[i] != AUTH_MASTER_CODE[i]){
-					//No access
+			//No access
 			this->setAccess(false);
 			return;
 		}

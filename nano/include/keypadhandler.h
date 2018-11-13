@@ -34,7 +34,7 @@ class KeypadHandler{
 		Keypad *_keypad;
 		Speaker *_speaker;
 		Authenticator *_authenticator;
-		char _mode = INPUT_NORMAL;
+		char _inputMode = INPUT_NORMAL;
 
 };
 

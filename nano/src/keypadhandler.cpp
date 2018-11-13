@@ -25,10 +25,10 @@ void KeypadHandler::loop(){
 	switch(key){
 		case 'A':
 			//Switch input mode
-			if(_mode == INPUT_MASTER){
-				_mode = INPUT_NORMAL;
+			if(_inputMode == INPUT_MASTER){
+				_inputMode = INPUT_NORMAL;
 			}else{
-				_mode = INPUT_MASTER;
+				_inputMode = INPUT_MASTER;
 			}
 		case 'B':
 			if(_authenticator->hasAccess()){
@@ -53,7 +53,7 @@ void KeypadHandler::loop(){
 			break;
 		case '*':
 			//Reset the input method and clear all keystrokes
-			_mode = INPUT_NORMAL;
+			_inputMode = INPUT_NORMAL;
 			_authenticator->clearKeyStrokes();
 			break;
 		default:
@@ -61,17 +61,21 @@ void KeypadHandler::loop(){
 			_authenticator->addKeyStroke(key);
 			break;
 	}
+#ifdef ENABLE_SERIAL
+	Serial.print("Input mode: ");
+	Serial.println(_inputMode);
+#endif
 }
 
 void KeypadHandler::submit(){
 	//Check input mode
-	if(_mode == INPUT_NORMAL){
+	if(_inputMode == INPUT_NORMAL){
 		//Authenticate as usual
 		_authenticator->authenticate();
 		return;
 	}
 	//Authenticate as master
 	_authenticator->authenticateMaster();
-	_mode = INPUT_NORMAL;
+	_inputMode = INPUT_NORMAL;
 	return;
 }
