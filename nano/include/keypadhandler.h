@@ -3,6 +3,7 @@
 
 #include <Keypad.h>
 #include "authenticator.h"
+#include "lock.h"
 #include "settings.h"
 
 #define KEYPAD_ROWS 4
@@ -24,7 +25,8 @@ class KeypadHandler{
 				const char row_pins[KEYPAD_ROWS],
 				const char col_pins[KEYPAD_COLS],
 				Authenticator *authenticator,
-				Speaker *speaker
+				Speaker *speaker,
+				Lock *lock
 			     );
 		void loop();
 	private:
@@ -33,8 +35,9 @@ class KeypadHandler{
 		//Variables:
 		Keypad *_keypad;
 		Speaker *_speaker;
+		Lock *_lock;
 		Authenticator *_authenticator;
-		char _inputMode = INPUT_NORMAL;
+		int _inputMode = INPUT_NORMAL;
 
 };
 

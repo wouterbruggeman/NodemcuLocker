@@ -6,6 +6,9 @@ Authenticator::Authenticator(Lock *lock, Speaker *speaker){
 }
 
 void Authenticator::authenticate(){
+#ifdef ENABLE_SERIAL
+	Serial.println("[AUTH] Authenticating...");
+#endif
 	for(int i = 0; i < UID_SIZE; i++){
 		if(_uid[i] != AUTH_UID[i]){
 			//No access
@@ -13,6 +16,9 @@ void Authenticator::authenticate(){
 			return;
 		}
 	}
+#ifdef ENABLE_SERIAL
+	Serial.println("[AUTH] UID accepted.");
+#endif
 
 	for(int i = 0; i < AUTH_CODE_SIZE; i++){
 		if(_pressedKeys[i] != AUTH_CODE[i]){
@@ -21,12 +27,18 @@ void Authenticator::authenticate(){
 			return;
 		}
 	}
+#ifdef ENABLE_SERIAL
+	Serial.println("[AUTH] Code accepted.");
+#endif
 	//Open the lock
 	this->setAccess(true);
 	_lock->open();
 }
 
 void Authenticator::authenticateMaster(){
+#ifdef ENABLE_SERIAL
+	Serial.println("[AUTH] Authenticating master...");
+#endif
 	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
 		if(_pressedKeys[i] != AUTH_MASTER_CODE[i]){
 			//No access
@@ -34,6 +46,9 @@ void Authenticator::authenticateMaster(){
 			return;
 		}
 	}
+#ifdef ENABLE_SERIAL
+	Serial.println("[AUTH] Master code accepted.");
+#endif
 
 	//Open the lock
 	this->setAccess(true);
@@ -42,7 +57,7 @@ void Authenticator::authenticateMaster(){
 
 void Authenticator::addUid(uint8_t uid[UID_SIZE]){
 	for(int i = 0; i < UID_SIZE; i++){
-		_uid[i] = uid[i];
+		_uid[i] = (unsigned char)uid[i];
 	}
 }
 
@@ -77,8 +92,13 @@ void Authenticator::setAccess(bool access){
 	this->clearUid();
 	_accessGranted = access;
 
-	Serial.print("Access changed: ");
-	Serial.println(access, DEC);
+#ifdef ENABLE_SERIAL
+	if(_accessGranted){
+		Serial.println("[AUTH] Access set to granted.");
+	}else{
+		Serial.println("[AUTH] Access set to denied.");
+	}
+#endif
 }
 
 void Authenticator::logout(){

@@ -4,16 +4,24 @@ void Lock::open(){
 	if(_state){
 		return;
 	}
-	this->step(true, 1000);
+	this->rotate(true, 1000);
 	_state = true;
+
+#ifdef ENABLE_SERIAL
+	Serial.println("[LOCK] Lock open.");
+#endif
 }
 
 void Lock::close(){
 	if(!_state){
 		return;
 	}
-	this->step(false, 1000);
+	this->rotate(false, 1000);
 	_state = false;
+
+#ifdef ENABLE_SERIAL
+	Serial.println("[LOCK] Lock closed.");
+#endif
 }
 
 bool Lock::getState(){

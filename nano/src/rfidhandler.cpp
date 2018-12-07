@@ -25,7 +25,7 @@ void RFIDHandler::loop(){
 
 void RFIDHandler::saveUid(){
 #ifdef ENABLE_SERIAL
-	Serial.print("UID: ");
+	Serial.print("[RFID] UID: ");
 #endif
 
 	uint8_t currentUid[UID_SIZE];

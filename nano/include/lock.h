@@ -2,6 +2,7 @@
 #define LOCK_H
 
 #include "motor.h"
+#include "settings.h"
 
 class Lock: public Motor{
 	public:

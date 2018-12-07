@@ -4,50 +4,73 @@ KeypadHandler::KeypadHandler(
 				const char row_pins[KEYPAD_ROWS],
 				const char col_pins[KEYPAD_COLS],
 				Authenticator *authenticator,
-				Speaker *speaker
+				Speaker *speaker,
+				Lock *lock
 		){
 	_keypad = new Keypad(makeKeymap(KEYS), row_pins, col_pins, KEYPAD_ROWS, KEYPAD_COLS);
 	_speaker = speaker;
 	_authenticator = authenticator;
+	_lock = lock;
 }
 
 void KeypadHandler::loop(){
-	//Read the key
+	//Read the key if possible
 	char key = _keypad->getKey();
 	if(key == NO_KEY){
 		return;
 	}
+
+
 #ifdef ENABLE_SERIAL
-	Serial.print("Key: ");
-	Serial.println(key);
+	Serial.print("[KEYPAD] Key: ");
+	Serial.print(key);
+	Serial.println("");
 #endif
+
+	//Determine what to to on keypress
 	_speaker->buttonBeep();
 	switch(key){
 		case 'A':
-			//Switch input mode
-			if(_inputMode == INPUT_MASTER){
-				_inputMode = INPUT_NORMAL;
-			}else{
-				_inputMode = INPUT_MASTER;
-			}
+			//Change input mode
+			_inputMode = INPUT_NORMAL;
+#ifdef ENABLE_SERIAL
+	Serial.print("[KEYPAD] Input mode: ");
+	Serial.println(_inputMode, DEC);
+#endif
+			break;
 		case 'B':
-			if(_authenticator->hasAccess()){
-				//Do something that requires access
-			}
+			//Change input mode
+			_inputMode = INPUT_MASTER;
+#ifdef ENABLE_SERIAL
+	Serial.print("[KEYPAD] Input mode: ");
+	Serial.println(_inputMode, DEC);
+#endif
 			break;
 		case 'C':
+			//Move the lock
 			if(_authenticator->hasAccess()){
-				//Do something that requires access
+#ifdef ENABLE_SERIAL
+	Serial.println("[KEYPAD] Moving lock right.");
+#endif
+				_lock->rotate(true, 10);
 			}
 			break;
 		case 'D':
-			//Do nothing.
+			//Move the lock
+			if(_authenticator->hasAccess()){
+#ifdef ENABLE_SERIAL
+	Serial.println("[KEYPAD] Moving lock left.");
+#endif
+				_lock->rotate(false, 10);
+			}
 			break;
 		case '#':
 			//Log in or out, depending on the access state
 			if(_authenticator->hasAccess()){
+				//Logout.
 				_authenticator->logout();
 			}else{
+				//Check for access and login if possible
 				this->submit();
 			}
 			break;
@@ -61,10 +84,6 @@ void KeypadHandler::loop(){
 			_authenticator->addKeyStroke(key);
 			break;
 	}
-#ifdef ENABLE_SERIAL
-	Serial.print("Input mode: ");
-	Serial.println(_inputMode);
-#endif
 }
 
 void KeypadHandler::submit(){
@@ -74,8 +93,10 @@ void KeypadHandler::submit(){
 		_authenticator->authenticate();
 		return;
 	}
+
 	//Authenticate as master
 	_authenticator->authenticateMaster();
+	//Reset the input mode
 	_inputMode = INPUT_NORMAL;
 	return;
 }

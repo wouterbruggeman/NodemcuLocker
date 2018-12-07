@@ -25,7 +25,7 @@ class Authenticator{
 		//Variables
 		char _pressedKeys[PRESSED_KEYS_BUFFER_SIZE];
 		char _pressedKeysCounter = 0;
-		char _uid[UID_SIZE];
+		unsigned char _uid[UID_SIZE];
 		bool _accessGranted = false;
 		unsigned long _timer = 0;
 

@@ -1,5 +1,4 @@
 #include "motor.h"
-#include <Arduino.h>
 
 //Create a new motor on the 4 given pins.
 Motor::Motor(int pin_0, int pin_1, int pin_2, int pin_3){
@@ -13,42 +12,59 @@ Motor::Motor(int pin_0, int pin_1, int pin_2, int pin_3){
 	pinMode(pin_2, OUTPUT);
 	pinMode(pin_3, OUTPUT);
 
-	_steps = 0;
+	this->turnOff();
 }
 
 void Motor::loop(){
 	//If the motor has steps to do:
 	if(_steps > 0){
-		this->rotate();
+		if(_direction){
+			for(int i = 0; i < PHRASE_COUNT; i++){
+				this->step(i);
+			}
+		}else{
+			for(int i = PHRASE_COUNT; i > 0; i--){
+				this->step(i);
+			}
+		}
+
+
 		_steps--;
+	}else{
+		this->turnOff();
 	}
 }
 
-void Motor::step(bool direction, unsigned int steps){
+bool Motor::isRotating(){
+	return (_steps > 0);
+}
+
+void Motor::rotate(bool direction, unsigned int steps){
 	//Set the direction and the amount of steps
 	_direction = direction;
 	_steps = steps;
 }
 
-void Motor::rotate(){
-	//Create a bitmask for the current motor phrase
-	//DEC == BIN
-	//128 == 10000000
-	unsigned char bitmask = (128 >> _phrase);
-
-	//Loop through all bits
+void Motor::step(int phrase){
+	//Loop the 4 pins
 	for(int i = 0; i < 4; i++){
 		//For every bit, check if the bit has to be true
-		bool bit = !!(bitmask & MOTOR_PHRASES[i]);
+		unsigned char bitmask = (1 << i);
+
+		//Calculate the value for the current pin
+		bool bit = !!(bitmask & MOTOR_PHRASES[phrase]);
 
 		//Write the bit to the pin
 		digitalWrite(_pins[i], bit);
-		delayMicroseconds(MICROSECOND_DELAY);
-	}
 
-	//Go to the next phrase
-	_phrase++;
-	if(_phrase > 7){
-		_phrase = 0;
+		//Delay for some time
+		delayMicroseconds(MICROSECOND_DELAY);
+		//delay(MICROSECOND_DELAY);
+	}
+}
+
+void Motor::turnOff(){
+	for(int i = 0; i < 4; i++){
+		digitalWrite(_pins[i], 0);
 	}
 }
