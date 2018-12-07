@@ -25,7 +25,6 @@ class KeypadHandler{
 				const char row_pins[KEYPAD_ROWS],
 				const char col_pins[KEYPAD_COLS],
 				Authenticator *authenticator,
-				Speaker *speaker,
 				Lock *lock
 			     );
 		void loop();
@@ -34,7 +33,6 @@ class KeypadHandler{
 
 		//Variables:
 		Keypad *_keypad;
-		Speaker *_speaker;
 		Lock *_lock;
 		Authenticator *_authenticator;
 		int _inputMode = INPUT_NORMAL;

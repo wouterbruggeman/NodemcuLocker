@@ -4,11 +4,9 @@ KeypadHandler::KeypadHandler(
 				const char row_pins[KEYPAD_ROWS],
 				const char col_pins[KEYPAD_COLS],
 				Authenticator *authenticator,
-				Speaker *speaker,
 				Lock *lock
 		){
 	_keypad = new Keypad(makeKeymap(KEYS), row_pins, col_pins, KEYPAD_ROWS, KEYPAD_COLS);
-	_speaker = speaker;
 	_authenticator = authenticator;
 	_lock = lock;
 }
@@ -26,9 +24,7 @@ void KeypadHandler::loop(){
 	Serial.print(key);
 	Serial.println("");
 #endif
-
 	//Determine what to to on keypress
-	_speaker->buttonBeep();
 	switch(key){
 		case 'A':
 			//Change input mode
@@ -98,5 +94,4 @@ void KeypadHandler::submit(){
 	_authenticator->authenticateMaster();
 	//Reset the input mode
 	_inputMode = INPUT_NORMAL;
-	return;
 }

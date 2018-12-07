@@ -3,11 +3,10 @@
 
 #include <MFRC522.h>
 #include "authenticator.h"
-#include "speaker.h"
 
 class RFIDHandler{
 	public:
-		RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator, Speaker *speaker);
+		RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator);
 		void loop();
 		void saveUid();
 		bool cardIsShown();
@@ -15,7 +14,6 @@ class RFIDHandler{
 		char getReaderVersion();
 	private:
 		MFRC522 *_reader;
-		Speaker *_speaker;
 		Authenticator *_authenticator;
 
 };

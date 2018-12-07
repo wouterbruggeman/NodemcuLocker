@@ -9,7 +9,7 @@
 
 //Login settings
 #define AUTH_CODE "1234"
-const char AUTH_UID[UID_SIZE] = {12,34,56,78};
+const unsigned char AUTH_UID[UID_SIZE] = {(unsigned char)12,(unsigned char)34,(unsigned char)56,(unsigned char)78};
 #define AUTH_MASTER_CODE "12345678901234567890"
 
 //Speaker Settings

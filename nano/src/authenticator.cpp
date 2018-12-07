@@ -1,7 +1,6 @@
 #include "authenticator.h"
 
-Authenticator::Authenticator(Lock *lock, Speaker *speaker){
-	_speaker = speaker;
+Authenticator::Authenticator(Lock *lock){
 	_lock = lock;
 }
 
@@ -82,12 +81,9 @@ void Authenticator::clearKeyStrokes(){
 }
 
 void Authenticator::setAccess(bool access){
-	if(access){
-		_speaker->beepPositive();
+	/*if(access){
 		_timer = millis() + LOGOUT_TIME;
-	}else{
-		_speaker->beepNegative();
-	}
+	}*/
 	this->clearKeyStrokes();
 	this->clearUid();
 	_accessGranted = access;
@@ -111,7 +107,7 @@ bool Authenticator::hasAccess(){
 }
 
 void Authenticator::loop(){
-	if(millis() > _timer){
+	/*if(millis() > _timer && _timer != 0){
 		this->logout();
-	}
+	}*/
 }

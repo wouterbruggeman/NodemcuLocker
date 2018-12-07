@@ -2,12 +2,11 @@
 #include <Arduino.h>
 #include "settings.h"
 
-RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator, Speaker *speaker){
+RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator){
 	SPI.begin();
 	_reader = new MFRC522(ss_pin, rst_pin);
 	_reader->PCD_Init();
 	_authenticator = authenticator;
-	_speaker = speaker;
 }
 
 void RFIDHandler::loop(){

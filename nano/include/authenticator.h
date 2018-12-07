@@ -3,12 +3,11 @@
 
 #include <Arduino.h>
 #include "lock.h"
-#include "speaker.h"
 #include "settings.h"
 
 class Authenticator{
 	public:
-		Authenticator(Lock *lock, Speaker *speaker);
+		Authenticator(Lock *lock);
 		void authenticate();
 		void authenticateMaster();
 		void addUid(uint8_t uid[UID_SIZE]);
@@ -27,9 +26,8 @@ class Authenticator{
 		char _pressedKeysCounter = 0;
 		unsigned char _uid[UID_SIZE];
 		bool _accessGranted = false;
-		unsigned long _timer = 0;
+		//unsigned long _timer = 0;
 
-		Speaker *_speaker;
 		Lock *_lock;
 };
 
