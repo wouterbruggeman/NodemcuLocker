@@ -10,7 +10,7 @@ class Authenticator{
 		Authenticator(Lock *lock);
 		void authenticate();
 		void authenticateMaster();
-		void addUid(uint8_t uid[UID_SIZE]);
+		void addUid(unsigned char uid[UID_SIZE]);
 		void clearUid();
 		void addKeyStroke(char key);
 		void clearKeyStrokes();
@@ -23,7 +23,7 @@ class Authenticator{
 
 		//Variables
 		char _pressedKeys[PRESSED_KEYS_BUFFER_SIZE];
-		char _pressedKeysCounter = 0;
+		int _pressedKeysCounter = 0;
 		unsigned char _uid[UID_SIZE];
 		bool _accessGranted = false;
 		//unsigned long _timer = 0;

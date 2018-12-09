@@ -23,19 +23,19 @@ void RFIDHandler::loop(){
 }
 
 void RFIDHandler::saveUid(){
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_RFID
 	Serial.print("[RFID] UID: ");
 #endif
 
-	uint8_t currentUid[UID_SIZE];
+	unsigned char currentUid[UID_SIZE];
 	for(int i = 0; i < UID_SIZE; i++){
-		currentUid[i] = _reader->uid.uidByte[i];
-#ifdef ENABLE_SERIAL
+		currentUid[i] = (unsigned char)_reader->uid.uidByte[i];
+#ifdef ENABLE_SERIAL_RFID
 		Serial.print(currentUid[i], DEC);
 		Serial.print(" ");
 #endif
 	}
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_RFID
 	Serial.println("");
 #endif
 

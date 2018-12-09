@@ -2,20 +2,26 @@
 
 Authenticator::Authenticator(Lock *lock){
 	_lock = lock;
+	this->clearUid();
+	this->clearKeyStrokes();
 }
 
 void Authenticator::authenticate(){
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] Authenticating...");
 #endif
 	for(int i = 0; i < UID_SIZE; i++){
-		if(_uid[i] != AUTH_UID[i]){
+		//if(_uid[i] != AUTH_UID[i]){
+
+			Serial.print(this->_uid[i], DEC);
+			Serial.print(" =?= ");
+			Serial.println(AUTH_UID[i], DEC);
 			//No access
-			this->setAccess(false);
-			return;
-		}
+			//this->setAccess(false);
+			//return;
+		//}
 	}
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] UID accepted.");
 #endif
 
@@ -26,7 +32,7 @@ void Authenticator::authenticate(){
 			return;
 		}
 	}
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] Code accepted.");
 #endif
 	//Open the lock
@@ -35,7 +41,7 @@ void Authenticator::authenticate(){
 }
 
 void Authenticator::authenticateMaster(){
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] Authenticating master...");
 #endif
 	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
@@ -45,7 +51,7 @@ void Authenticator::authenticateMaster(){
 			return;
 		}
 	}
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] Master code accepted.");
 #endif
 
@@ -54,10 +60,16 @@ void Authenticator::authenticateMaster(){
 	_lock->open();
 }
 
-void Authenticator::addUid(uint8_t uid[UID_SIZE]){
+void Authenticator::addUid(unsigned char uid[UID_SIZE]){
+	Serial.print("[AUTH] UID added: ");
 	for(int i = 0; i < UID_SIZE; i++){
-		_uid[i] = (unsigned char)uid[i];
+		_uid[i] = uid[i];
+		Serial.print(_uid[i], DEC);
+		Serial.print(" ");
 	}
+	Serial.println("EXTRA LOOP: ");
+	this->loop();
+	Serial.println("");
 }
 
 void Authenticator::clearUid(){
@@ -75,7 +87,7 @@ void Authenticator::addKeyStroke(char key){
 
 void Authenticator::clearKeyStrokes(){
 	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
-		_pressedKeys[i] = '0';
+		_pressedKeys[i] = 0;
 	}
 	_pressedKeysCounter = 0;
 }
@@ -88,7 +100,9 @@ void Authenticator::setAccess(bool access){
 	this->clearUid();
 	_accessGranted = access;
 
-#ifdef ENABLE_SERIAL
+	//BUG CAN BE FOUND HERE.....
+
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	if(_accessGranted){
 		Serial.println("[AUTH] Access set to granted.");
 	}else{
@@ -109,5 +123,11 @@ bool Authenticator::hasAccess(){
 void Authenticator::loop(){
 	/*if(millis() > _timer && _timer != 0){
 		this->logout();
-	}*/
+	}
+	Serial.print("[AUTH] Looped. UID: ");
+	for(int i = 0; i < UID_SIZE; i++){
+		Serial.print((unsigned char)_uid[i], DEC);
+		Serial.print(" ");
+	}
+	Serial.println("");*/
 }

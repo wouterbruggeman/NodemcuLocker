@@ -16,7 +16,6 @@ void setup(){
 	Serial.begin(9600);
 #endif
 
-
 	//Create the handlers
 	rfidHandler = new RFIDHandler(MFRC522_SS_PIN, MFRC522_RST_PIN, authenticator);
 	keypadHandler = new KeypadHandler(KEYPAD_ROW_PINS, KEYPAD_COL_PINS, authenticator, lock);
@@ -27,11 +26,11 @@ void setup(){
 }
 
 void loop(){
-	if(!lock->isRotating()){
+	//if(!lock->isRotating()){
 		//Loop the handlers, if the lock is not rotating.
 		rfidHandler->loop();
 		keypadHandler->loop();
 		authenticator->loop();
-	}
+	//}
 	lock->loop();
 }

@@ -7,7 +7,7 @@ void Lock::open(){
 	this->rotate(true, 1000);
 	_state = true;
 
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_LOCK
 	Serial.println("[LOCK] Lock open.");
 #endif
 }
@@ -19,7 +19,7 @@ void Lock::close(){
 	this->rotate(false, 1000);
 	_state = false;
 
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_LOCK
 	Serial.println("[LOCK] Lock closed.");
 #endif
 }
