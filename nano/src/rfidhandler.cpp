@@ -28,6 +28,9 @@ void RFIDHandler::reset(){
 	for(int i = 0; i < UID_SIZE; i++){
 		_uid[i] = 0;
 	}
+#ifdef ENABLE_SERIAL_RFID
+	Serial.println("[RFID] Reset.");
+#endif
 }
 
 void RFIDHandler::saveUid(){

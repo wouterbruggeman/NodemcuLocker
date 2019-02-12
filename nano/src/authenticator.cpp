@@ -59,11 +59,11 @@ void Authenticator::authenticate(){
 }
 
 void Authenticator::authenticateMaster(){
-/*#ifdef ENABLE_SERIAL_AUTHENTICATOR
+#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] Authenticating master...");
 #endif
 	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
-		if(_pressedKeys[i] != AUTH_MASTER_CODE[i]){
+		if(_keypadHandler->getIndex(i) != AUTH_MASTER_CODE[i]){
 			//No access
 			this->setAccess(false);
 			return;
@@ -74,7 +74,7 @@ void Authenticator::authenticateMaster(){
 #endif
 
 	//Open the lock
-	this->setAccess(true);*/
+	this->setAccess(true);
 }
 
 void Authenticator::setAccess(bool access){

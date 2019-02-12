@@ -71,7 +71,7 @@ void KeypadHandler::reset(){
 
 
 #ifdef ENABLE_SERIAL_KEYPAD
-	Serial.println("[KEYPAD] Input mode and keystrokes reset.");
+	Serial.println("[KEYPAD] Reset.");
 #endif
 }
 
