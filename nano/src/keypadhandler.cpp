@@ -2,13 +2,10 @@
 
 KeypadHandler::KeypadHandler(
 				const char row_pins[KEYPAD_ROWS],
-				const char col_pins[KEYPAD_COLS],
-				Authenticator *authenticator,
-				Lock *lock
+				const char col_pins[KEYPAD_COLS]
 		){
 	_keypad = new Keypad(makeKeymap(KEYS), row_pins, col_pins, KEYPAD_ROWS, KEYPAD_COLS);
-	_authenticator = authenticator;
-	_lock = lock;
+	reset();
 }
 
 void KeypadHandler::loop(){
@@ -43,61 +40,64 @@ void KeypadHandler::loop(){
 #endif
 			break;
 		case 'C':
-			//Move the lock
-			if(_authenticator->hasAccess()){
-#ifdef ENABLE_SERIAL_KEYPAD
-	Serial.println("[KEYPAD] Moving lock right.");
-#endif
-				_lock->rotate(true, 10);
-			}
-			break;
 		case 'D':
-			//Move the lock
-			if(_authenticator->hasAccess()){
-#ifdef ENABLE_SERIAL_KEYPAD
-	Serial.println("[KEYPAD] Moving lock left.");
-#endif
-				_lock->rotate(false, 10);
-			}
+			_command = KeypadHandler::AUTH_LOGOUT;
 			break;
 		case '#':
-			//Log in or out, depending on the access state
-			/*if(_authenticator->hasAccess()){
-				//Logout.
-				_authenticator->logout();
-			}else{*/
-				//Check for access and login if possible
-				this->submit();
-			//}
+			this->submit();
 			break;
 		case '*':
-#ifdef ENABLE_SERIAL_KEYPAD
-	Serial.println("[KEYPAD] Input mode and keystrokes reset.");
-#endif
-			//Reset the input method and clear all keystrokes
-			_inputMode = INPUT_NORMAL;
-			_authenticator->clearKeyStrokes();
+			reset();
 			break;
 		default:
 			//Just add the keystroke.
-			_authenticator->addKeyStroke(key);
+			addKeyStroke(key);
 			break;
 	}
 }
 
-void KeypadHandler::submit(){
-#ifdef ENABLE_SERIAL_KEYPAD
-	Serial.println("[KEYPAD] Submitting codes.");
-#endif
-	//Check input mode
-	if(_inputMode == INPUT_NORMAL){
-		//Authenticate as usual
-		_authenticator->authenticate();
-		return;
+void KeypadHandler::reset(){
+	//Reset keys
+	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
+		_pressedKeys[i] = 0;
 	}
+	_pressedKeysCounter = 0;
 
-	//Authenticate as master
-	_authenticator->authenticateMaster();
-	//Reset the input mode
+	//Reset command
+	_command = KeypadHandler::WAIT;
+
+	//Reset the input method
 	_inputMode = INPUT_NORMAL;
+
+
+#ifdef ENABLE_SERIAL_KEYPAD
+	Serial.println("[KEYPAD] Input mode and keystrokes reset.");
+#endif
+}
+
+int KeypadHandler::getCommand(){
+	return _command;
+}
+
+unsigned char KeypadHandler::getIndex(int index){
+	return _pressedKeys[index];
+}
+
+void KeypadHandler::addKeyStroke(char key){
+	if(_pressedKeysCounter < PRESSED_KEYS_BUFFER_SIZE){
+		_pressedKeys[_pressedKeysCounter] = key;
+		_pressedKeysCounter++;
+	}
+}
+
+void KeypadHandler::submit(){
+	if(_inputMode == INPUT_NORMAL){
+		_command = KeypadHandler::AUTH_NORMAL;
+	}else if(_inputMode == INPUT_MASTER){
+		_command = KeypadHandler::AUTH_MASTER;
+	}
+#ifdef ENABLE_SERIAL_KEYPAD
+	Serial.print("[KEYPAD] Command: ");
+	Serial.println(_command);
+#endif
 }

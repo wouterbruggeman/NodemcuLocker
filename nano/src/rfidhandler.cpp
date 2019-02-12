@@ -2,11 +2,12 @@
 #include <Arduino.h>
 #include "settings.h"
 
-RFIDHandler::RFIDHandler(int ss_pin, int rst_pin, Authenticator *authenticator){
+RFIDHandler::RFIDHandler(int ss_pin, int rst_pin){
 	SPI.begin();
 	_reader = new MFRC522(ss_pin, rst_pin);
 	_reader->PCD_Init();
-	_authenticator = authenticator;
+
+	reset();
 }
 
 void RFIDHandler::loop(){
@@ -22,25 +23,28 @@ void RFIDHandler::loop(){
 	this->saveUid();
 }
 
+void RFIDHandler::reset(){
+	//Reset the uid
+	for(int i = 0; i < UID_SIZE; i++){
+		_uid[i] = 0;
+	}
+}
+
 void RFIDHandler::saveUid(){
 #ifdef ENABLE_SERIAL_RFID
 	Serial.print("[RFID] UID: ");
 #endif
 
-	unsigned char currentUid[UID_SIZE];
 	for(int i = 0; i < UID_SIZE; i++){
-		currentUid[i] = (unsigned char)_reader->uid.uidByte[i];
+		_uid[i] = (unsigned char)_reader->uid.uidByte[i];
 #ifdef ENABLE_SERIAL_RFID
-		Serial.print(currentUid[i], DEC);
+		Serial.print(_uid[i], DEC);
 		Serial.print(" ");
 #endif
 	}
 #ifdef ENABLE_SERIAL_RFID
 	Serial.println("");
 #endif
-
-	//Send the uid
-	_authenticator->addUid(currentUid);
 
 	_reader->PICC_HaltA();
 }
@@ -65,4 +69,8 @@ bool RFIDHandler::readerIsConnected(){
 
 char RFIDHandler::getReaderVersion(){
 	return _reader->PCD_ReadRegister(_reader->VersionReg);
+}
+
+unsigned char RFIDHandler::getIndex(int index){
+	return _uid[index];
 }

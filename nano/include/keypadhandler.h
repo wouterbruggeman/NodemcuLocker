@@ -2,8 +2,6 @@
 #define KEYPADHANDLER_H
 
 #include <Keypad.h>
-#include "authenticator.h"
-#include "lock.h"
 #include "settings.h"
 
 #define KEYPAD_ROWS 4
@@ -23,19 +21,31 @@ class KeypadHandler{
 	public:
 		KeypadHandler(
 				const char row_pins[KEYPAD_ROWS],
-				const char col_pins[KEYPAD_COLS],
-				Authenticator *authenticator,
-				Lock *lock
+				const char col_pins[KEYPAD_COLS]
 			     );
 		void loop();
+		void reset();
+		int getCommand();
+		unsigned char getIndex(int index);
+
+		enum Commands{
+			WAIT = 0,
+			AUTH_NORMAL = 1,
+			AUTH_MASTER = 2,
+			AUTH_LOGOUT = 3
+		};
 	private:
+		void addKeyStroke(char key);
 		void submit();
 
 		//Variables:
 		Keypad *_keypad;
-		Lock *_lock;
-		Authenticator *_authenticator;
-		int _inputMode = INPUT_NORMAL;
+
+		char _pressedKeys[PRESSED_KEYS_BUFFER_SIZE];
+		int _pressedKeysCounter = 0;
+
+		int _command;
+		int _inputMode;
 
 };
 

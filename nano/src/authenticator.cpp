@@ -1,9 +1,28 @@
 #include "authenticator.h"
 
-Authenticator::Authenticator(Lock *lock){
+Authenticator::Authenticator(RFIDHandler *rfidHandler, KeypadHandler *keypadHandler, Lock *lock){
+	_rfidHandler = rfidHandler;
+	_keypadHandler = keypadHandler;
 	_lock = lock;
-	this->clearUid();
-	this->clearKeyStrokes();
+
+	_accessGranted = false;
+	_timer = 0;
+
+}
+
+void Authenticator::loop(){
+	if(millis() > _timer && _timer != 0){
+		this->setAccess(false);
+	}
+
+	//Check if the keypadhandler is ready
+	if(_keypadHandler->getCommand() == KeypadHandler::AUTH_NORMAL){
+		this->authenticate();
+	}else if(_keypadHandler->getCommand() == KeypadHandler::AUTH_MASTER){
+		this->authenticateMaster();
+	}else if(_keypadHandler->getCommand() == KeypadHandler::AUTH_LOGOUT){
+		this->setAccess(false);
+	}
 }
 
 void Authenticator::authenticate(){
@@ -11,22 +30,22 @@ void Authenticator::authenticate(){
 	Serial.println("[AUTH] Authenticating...");
 #endif
 	for(int i = 0; i < UID_SIZE; i++){
-		//if(_uid[i] != AUTH_UID[i]){
-
-			Serial.print(this->_uid[i], DEC);
-			Serial.print(" =?= ");
+		if(_rfidHandler->getIndex(i) != AUTH_UID[i]){
+			Serial.print(_rfidHandler->getIndex(i), DEC);
+			Serial.print(" != ");
 			Serial.println(AUTH_UID[i], DEC);
+
 			//No access
-			//this->setAccess(false);
-			//return;
-		//}
+			this->setAccess(false);
+			return;
+		}
 	}
 #ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] UID accepted.");
 #endif
 
 	for(int i = 0; i < AUTH_CODE_SIZE; i++){
-		if(_pressedKeys[i] != AUTH_CODE[i]){
+		if(_keypadHandler->getIndex(i) != AUTH_NORMAL_CODE[i]){
 			//No access
 			this->setAccess(false);
 			return;
@@ -37,11 +56,10 @@ void Authenticator::authenticate(){
 #endif
 	//Open the lock
 	this->setAccess(true);
-	_lock->open();
 }
 
 void Authenticator::authenticateMaster(){
-#ifdef ENABLE_SERIAL_AUTHENTICATOR
+/*#ifdef ENABLE_SERIAL_AUTHENTICATOR
 	Serial.println("[AUTH] Authenticating master...");
 #endif
 	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
@@ -56,51 +74,35 @@ void Authenticator::authenticateMaster(){
 #endif
 
 	//Open the lock
-	this->setAccess(true);
-	_lock->open();
-}
-
-void Authenticator::addUid(unsigned char uid[UID_SIZE]){
-	Serial.print("[AUTH] UID added: ");
-	for(int i = 0; i < UID_SIZE; i++){
-		_uid[i] = uid[i];
-		Serial.print(_uid[i], DEC);
-		Serial.print(" ");
-	}
-	Serial.println("EXTRA LOOP: ");
-	this->loop();
-	Serial.println("");
-}
-
-void Authenticator::clearUid(){
-	for(int i = 0; i < UID_SIZE; i++){
-		_uid[i] = 0;
-	}
-}
-
-void Authenticator::addKeyStroke(char key){
-	if(_pressedKeysCounter < PRESSED_KEYS_BUFFER_SIZE){
-		_pressedKeys[_pressedKeysCounter] = key;
-		_pressedKeysCounter++;
-	}
-}
-
-void Authenticator::clearKeyStrokes(){
-	for(int i = 0; i < PRESSED_KEYS_BUFFER_SIZE; i++){
-		_pressedKeys[i] = 0;
-	}
-	_pressedKeysCounter = 0;
+	this->setAccess(true);*/
 }
 
 void Authenticator::setAccess(bool access){
-	/*if(access){
-		_timer = millis() + LOGOUT_TIME;
-	}*/
-	this->clearKeyStrokes();
-	this->clearUid();
+	//Reset the devices
+	_rfidHandler->reset();
+	_keypadHandler->reset();
+
+	//Check if the previous state was the same
+	if(access == _accessGranted){
+		return;
+	}
+
+	//Update the state
 	_accessGranted = access;
 
-	//BUG CAN BE FOUND HERE.....
+	//If access was granted
+	if(_accessGranted){
+		//Open the lock for some time
+		_timer = millis() + LOGOUT_TIME;
+		_lock->open();
+	}else{
+		//Close the lock
+		_timer = 0;
+		_lock->close();
+	}
+
+
+
 
 #ifdef ENABLE_SERIAL_AUTHENTICATOR
 	if(_accessGranted){
@@ -111,23 +113,6 @@ void Authenticator::setAccess(bool access){
 #endif
 }
 
-void Authenticator::logout(){
-	_lock->close();
-	_accessGranted = false;
-}
-
 bool Authenticator::hasAccess(){
 	return _accessGranted;
-}
-
-void Authenticator::loop(){
-	/*if(millis() > _timer && _timer != 0){
-		this->logout();
-	}
-	Serial.print("[AUTH] Looped. UID: ");
-	for(int i = 0; i < UID_SIZE; i++){
-		Serial.print((unsigned char)_uid[i], DEC);
-		Serial.print(" ");
-	}
-	Serial.println("");*/
 }
